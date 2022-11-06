@@ -127,6 +127,111 @@
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
+
+      <!--本地代码库依赖-->
+<!--    <dependency>-->
+<!--      <groupId>xchange-core</groupId>-->
+<!--      <artifactId>xchange-core</artifactId>-->
+<!--      <version>5.0.14-SNAPSHOT</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/lib/xchange/xchange-core-5.0.14-SNAPSHOT.jar</systemPath>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>xchange-examples</groupId>-->
+<!--      <artifactId>xchange-examples</artifactId>-->
+<!--      <version>5.0.14-SNAPSHOT</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/lib/xchange/xchange-examples-5.0.14-SNAPSHOT.jar</systemPath>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>xchange-bitfinex</groupId>-->
+<!--      <artifactId>xchange-bitfinex</artifactId>-->
+<!--      <version>5.0.14-SNAPSHOT</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/lib/xchange/xchange-bitfinex-5.0.14-SNAPSHOT.jar</systemPath>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>xchange-rescu</groupId>-->
+<!--      <artifactId>rescu</artifactId>-->
+<!--      <version>2.1.0</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/lib/xchange/rescu-2.1.0.jar</systemPath>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>xchange-core</groupId>
+      <artifactId>xchange-core</artifactId>
+      <version>5.0.14</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/xchange/xchange-core-5.0.14-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>xchange-bitfinex</groupId>
+      <artifactId>xchange-bitfinex</artifactId>
+      <version>5.0.14</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/xchange/xchange-bitfinex-5.0.14-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>xchange-binance</groupId>
+      <artifactId>xchange-binance</artifactId>
+      <version>5.0.14</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/xchange/xchange-binance-5.0.14-SNAPSHOT.jar</systemPath>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>binance-client</groupId>-->
+<!--      <artifactId>binance-client</artifactId>-->
+<!--      <version>1.0.9</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/lib/binanceSDK/binance-client-1.0.9-SNAPSHOT-jar-with-dependencies.jar</systemPath>-->
+<!--    </dependency>-->
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.22</version>
+    </dependency>
+
+    <!--xchange原创代码库依赖-->
+<!--    <dependency>-->
+<!--      <groupId>org.knowm.xchange</groupId>-->
+<!--      <artifactId>xchange-core</artifactId>-->
+<!--      <version>5.0.13</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.knowm.xchange</groupId>-->
+<!--      <artifactId>xchange-bitfinex</artifactId>-->
+<!--      <version>5.0.13</version>-->
+<!--    </dependency>-->
+
+    <!--ta4j原创代码库依赖-->
+<!--    <dependency>-->
+<!--      <groupId>org.ta4j</groupId>-->
+<!--      <artifactId>ta4j-core</artifactId>-->
+<!--      <version>0.14</version>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>ta4j-core</groupId>
+      <artifactId>ta4j-core</artifactId>
+      <version>0.15-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/ta4j/ta4j-core-0.15-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>ta4j-examples</groupId>
+      <artifactId>ta4j-examples</artifactId>
+      <version>0.15-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/ta4j/ta4j-examples-0.15-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>binance-client</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+
   </dependencies>
 
   <build>

@@ -43,7 +43,7 @@ See log4j2 guide for more options: http://logging.apache.org/log4j/2.x/manual/ap
         我建议在“信息”处运行 BX-bot。 'debug' 日志记录将为 Exchange 适配器生成 *lot* 的输出；
          调试非常方便，但对您的磁盘空间不太好！
         -->
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="BXBot_RollingFile"/>
             <AppenderRef ref="STDOUT"/>
         </Root>

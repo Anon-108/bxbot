@@ -285,7 +285,7 @@ public class ExampleScalpingStrategy implements TradingStrategy {
         return;
       }
 
-      // Get the current BID and ASK spot prices. 获取当前的 BID 和 ASK 现货价格。
+      // Get the current BID and ASK spot prices. TODO 获取当前的 BID 和 ASK 现货价格。
       final BigDecimal currentBidPrice = buyOrders.get(0).getPrice();
       final BigDecimal currentAskPrice = sellOrders.get(0).getPrice();
 

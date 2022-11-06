@@ -143,6 +143,7 @@
     <module>bxbot-services</module>
     <module>bxbot-rest-api</module>
     <module>bxbot-app</module>
+    <module>binance-client</module>
   </modules>
   <dependencyManagement>
     <dependencies>

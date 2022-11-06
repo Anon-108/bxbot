@@ -167,17 +167,6 @@ abstract class AbstractExchangeAdapter {
 
       if (httpMethod.equalsIgnoreCase("POST") && postData != null) {
         LOG.debug(() -> "Doing POST with request body: " + postData);
-        //TODO 手动设置安全策略
-//        System.setSecurityManager(new SecurityManager(){
-//          public void checkConnect (String host, int port) {}
-//          public void checkConnect (String host, int port, Object context) {}
-//        });
-        // TODO 请求代理接口  仅在本地测试开启
-        System.setProperty("proxyType", "4");
-        System.setProperty("proxyPort", Integer.toString(10809));
-        System.setProperty("proxyHost", "127.0.0.1");
-        System.setProperty("proxySet", "true");
-//
 //        URL url2 = new URL("https://www.baidu.com/");
 //        URL url2 = new URL("https://www.google.com/");
 //        HttpURLConnection exchangeConnection2 = (HttpURLConnection) url2.openConnection();

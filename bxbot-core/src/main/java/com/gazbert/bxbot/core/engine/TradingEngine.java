@@ -23,6 +23,15 @@
 
 package com.gazbert.bxbot.core.engine;
 
+import com.binance.client.RequestOptions;
+import com.binance.client.SyncRequestClient;
+import com.binance.client.constant.Symbol;
+import com.binance.client.model.enums.CandlestickInterval;
+import com.binance.client.model.enums.OrderState;
+import com.binance.client.model.market.Candlestick;
+import com.binance.client.model.market.ExchangeInformation;
+import com.binance.client.model.market.SymbolOrderBook;
+import com.binance.client.model.trade.Order;
 import com.gazbert.bxbot.core.config.exchange.ExchangeApiConfigBuilder;
 import com.gazbert.bxbot.core.config.exchange.ExchangeConfigImpl;
 import com.gazbert.bxbot.core.config.strategy.TradingStrategiesBuilder;
@@ -44,10 +53,18 @@ import com.gazbert.bxbot.strategy.api.TradingStrategy;
 import com.gazbert.bxbot.trading.api.ExchangeNetworkException;
 import com.gazbert.bxbot.trading.api.TradingApiException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.knowm.xchange.currency.CurrencyPair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
@@ -108,6 +125,11 @@ public class TradingEngine {
   private final MarketConfigService marketConfigService;
 
   private final TradingStrategiesBuilder tradingStrategiesBuilder;
+
+  @Value("${binance.APIKey}")
+  private String apiKey;
+  @Value("${binance.SecretKey}")
+  private String secretKey;
 
   /**
    * Creates the Trading Engine.
@@ -382,5 +404,125 @@ public class TradingEngine {
     final List<MarketConfig> markets = marketConfigService.getAllMarketConfig();
     LOG.info(() -> "Fetched Markets config from repository: 从存储库获取市场配置：" + markets);
     return tradingStrategiesBuilder.buildStrategies(strategies, markets, exchangeAdapter);
+  }
+
+  /**
+   * 开始交易
+   */
+  public void startTrade(){
+    synchronized (IS_RUNNING_MONITOR) {
+      if (isRunning) {
+        final String errorMsg = " 无法启动交易引擎，因为它已经在运行！";
+        LOG.error(() -> errorMsg);
+        throw new IllegalStateException(errorMsg);
+      }
+      isRunning = true;
+    }
+    //缓存交易信息
+    HashMap<String, Object> map = new HashMap<>();
+    while (true) {
+      LOG.info("###程序开始###");
+      //查询蜡烛数据
+      RequestOptions requestOptions = new RequestOptions();
+      //封装同步请求
+      SyncRequestClient syncRequestClient = SyncRequestClient.create(apiKey,secretKey,requestOptions);
+
+      try {
+        while (isRunning) {
+          //蜡烛台数据 15m
+    //      List<Candlestick> candlestick15m = syncRequestClient.getCandlestick("BNBUSDT", CandlestickInterval.FIFTEEN_MINUTES, null, null, 2);
+          //蜡烛台数据 3m
+          List<Candlestick> candlestick15m = syncRequestClient.getCandlestick(Symbol.BNB_USDT, CandlestickInterval.THREE_MINUTES, null, null, 2);
+          //服务器时间
+          Long serverTime = syncRequestClient.getServerTime();
+
+          //当前最优挂单
+          List<SymbolOrderBook> symbolOrderBookTicker = syncRequestClient.getSymbolOrderBookTicker(Symbol.BNB_USDT);
+
+
+          candlestick15m.forEach(item -> {
+            item.getOpenTimeStr();
+            item.getCloseTimeStr();
+          });
+          //第一根蜡烛
+          Candlestick k1 = candlestick15m.get(0);
+          //第二根蜡烛
+          Candlestick k2 = candlestick15m.get(1);
+          BigDecimal startClose = k2.getClose();
+          BigDecimal endClose = k1.getClose();
+          //收盘价减开盘价
+          BigDecimal result =  endClose.subtract(startClose);
+          //取绝对值
+          double absValue = Math.abs(result.doubleValue());
+
+
+          Gson gson = new Gson();
+          String json = gson.toJson(candlestick15m);
+          String orderBookJson = gson.toJson(symbolOrderBookTicker);
+
+          System.out.println();
+          LOG.info("============================");
+          LOG.info("candlestick15m:"+json);
+          LOG.info("orderBookJson:"+orderBookJson);
+          LOG.info("------result(收盘价减开盘价):"+result);
+          LOG.info("------当前币安服务器时间:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(serverTime));
+    //      LOG.info("------服务器时间-5秒:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format((serverTime - 1000 * 5)));
+          LOG.info("============================");
+
+          //通过服务器时间计算最后一根蜡烛开盘的时间
+          long intervalTime = ((serverTime - k2.getOpenTime()) >= 1000) ? (serverTime - k2.getOpenTime()) / 1000 : 0L;
+          LOG.info("已经开盘:"+intervalTime+"(秒)");
+
+          //通过服务器时间计算还有多久(秒)收盘
+          long timeRemaining = (k2.getCloseTime() - serverTime) / 1000;
+          LOG.info("距离收盘时间还有:"+timeRemaining+"(秒)");
+
+          //如果开盘时间超过指定规则范围,则等待下次蜡烛
+          if (intervalTime > 200){
+            LOG.info("睡眠到下次开盘时间:"+timeRemaining);
+            long sleepTime = timeRemaining * 1000;
+            if (sleepTime > 0)
+              Thread.sleep(sleepTime); //直接睡眠到下次开盘时间
+            LOG.info("======开始下一个蜡烛=====");
+            continue;
+          }
+          //查询订单信息
+          if (map.isEmpty()){
+//        List<Order> orderList = syncRequestClient.getOpenOrders(Symbol.BNB_USDT);
+            List<Order> allOrders = syncRequestClient.getAllOrders(Symbol.BNB_USDT, null, null, null, 3);
+            if (!allOrders.isEmpty()){
+              allOrders.forEach(item ->{
+                //如果订单为已成交/部分成交,则加入缓存( TODO 目前阶段只允许同时存在一单)
+                if (item.getStatus().equals(OrderState.FILLED.name()) || item.getStatus().equals(OrderState.PARTIALFILLED.name())) {
+                  map.put("order",item);
+                }
+              });
+            }
+          }
+          //上涨趋势
+          if (result.doubleValue() > 0 ){
+//            //涨幅超过1usd
+//            if (absValue >= 1){}
+
+            LOG.info("单前蜡烛上涨↑usd:"+absValue+"(usd)");
+          }else { //下跌趋势
+//            //跌幅超过1usd
+//            if (absValue >= 1){}
+
+            LOG.info("单前蜡烛下跌↓:"+absValue+"(usd)");
+          }
+
+          LOG.info("睡眠:1.5秒");
+          Thread.sleep(1500);
+          LOG.info("-----开始下一http请求-----");
+
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        LOG.info("Message"+e.getMessage());
+      }
+    }
+
+
   }
 }
