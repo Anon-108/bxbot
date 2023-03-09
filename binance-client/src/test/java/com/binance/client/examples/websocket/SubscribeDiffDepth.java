@@ -2,6 +2,9 @@ package com.binance.client.examples.websocket;
 
 import com.binance.client.SubscriptionClient;
 
+/**
+ * 订阅差异深度
+ */
 public class SubscribeDiffDepth {
 
     public static void main(String[] args) {

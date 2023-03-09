@@ -3,6 +3,9 @@ package com.binance.client.examples.websocket;
 import com.binance.client.SubscriptionClient;
 import com.binance.client.model.enums.CandlestickInterval;
 
+/**
+ * 订阅烛台
+ */
 public class SubscribeCandlestick {
 
     public static void main(String[] args) {

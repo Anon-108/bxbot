@@ -29,6 +29,7 @@ import com.binance.client.constant.Symbol;
 import com.binance.client.model.enums.CandlestickInterval;
 import com.binance.client.model.enums.OrderState;
 import com.binance.client.model.market.Candlestick;
+import com.binance.client.model.market.ExchangeInfoEntry;
 import com.binance.client.model.market.ExchangeInformation;
 import com.binance.client.model.market.SymbolOrderBook;
 import com.binance.client.model.trade.Order;
@@ -58,11 +59,12 @@ import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.knowm.xchange.currency.CurrencyPair;
+//import org.knowm.xchange.currency.CurrencyPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -426,6 +428,11 @@ public class TradingEngine {
       RequestOptions requestOptions = new RequestOptions();
       //封装同步请求
       SyncRequestClient syncRequestClient = SyncRequestClient.create(apiKey,secretKey,requestOptions);
+      ExchangeInformation exchangeInformation = syncRequestClient.getExchangeInformation();
+      List<String> symbolList = exchangeInformation.getSymbols().stream().map(ExchangeInfoEntry::getSymbol).collect(Collectors.toList());
+      System.out.println("================================================");
+      symbolList.forEach(item-> System.out.println(item));
+      System.out.println("================================================");
 
       try {
         while (isRunning) {

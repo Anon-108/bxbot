@@ -2,6 +2,9 @@ package com.binance.client.examples.websocket;
 
 import com.binance.client.SubscriptionClient;
 
+/**
+ * 订阅符号代码
+ */
 public class SubscribeSymbolTicker {
 
     public static void main(String[] args) {
